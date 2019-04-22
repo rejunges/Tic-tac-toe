@@ -11,6 +11,11 @@ blue = (0, 0, 255)
 navy = (0, 0, 128)
 
 def first_screen(background):
+	""" 
+	Screen of: 'Which symbol do you want to use?'
+	Args:
+		background (<class 'pygame.Surface'>): surface of pygame
+	"""
 	background.fill(gainsboro)
 	font = pygame.font.Font(None, 40)
 	text = font.render("Qual símbolo quer utilizar?", 1, black)
@@ -30,6 +35,11 @@ def first_screen(background):
 	background.blit(text, (310, 335))
 		
 def second_screen(background):
+	""" 
+	Screen of: 'Who should start playing?'
+	Args:
+		background (<class 'pygame.Surface'>): surface of pygame
+	"""
 	background.fill(gainsboro)
 	font = pygame.font.Font(None, 40)
 	text = font.render("Quem deve começar jogando?", 1, black)
@@ -46,6 +56,11 @@ def second_screen(background):
 
 	
 def game_screen(background):
+	""" 
+	Game screen/grid screen. Board is drawn
+	Args:
+		background (<class 'pygame.Surface'>): surface of pygame
+	"""
 	background.fill(gainsboro)
 	font = pygame.font.Font(None, 50)
 	text = font.render("TIC-TAC-TOE", 1, navy)
@@ -61,6 +76,16 @@ def game_screen(background):
 	pygame.draw.line(background, navy, (25,400), (475, 400), 2)
 
 def check_click_grid(background, pos, game):
+	""" 
+	Checks if the click  in third screen/game/grid is on the buttons, 
+	then, if it is and the movement is valid, the human player makes the move
+	Args:
+		background (<class 'pygame.Surface'>): surface of pygame
+		pos (tuple): position x and y of screen
+		game (class 'tictactoe.Tictactoe'): tictactoe game
+	Returns:
+		bool: True if the movement is done, otherwise False	
+	"""
 	i,j = pos
 	position = -1
 	#Upper left
@@ -94,6 +119,15 @@ def check_click_grid(background, pos, game):
 	return game.human_turn(position, game.human)
 
 def check_click_first_screen(background, pos, game):
+	""" 
+	Checks if the click  in first screen is on the buttons
+	Args:
+		background (<class 'pygame.Surface'>): surface of pygame
+		pos (tuple): position x and y of screen
+		game (class 'tictactoe.Tictactoe'): tictactoe game
+	Returns:
+		bool: True if it was, otherwise False	
+	"""
 	i, j = pos
 	screen = 0
 	if (i >= 100 and i <= 250 and j >= 320 and j <= 370):
@@ -110,6 +144,15 @@ def check_click_first_screen(background, pos, game):
 	return screen
 
 def check_click_second_screen(background, pos, game):
+	""" 
+	Checks if the click  in second screen is on the buttons
+	Args:
+		background (<class 'pygame.Surface'>): surface of pygame
+		pos (tuple): position x and y of screen
+		game (class 'tictactoe.Tictactoe'): tictactoe game
+	Returns:
+		bool: True if it was, otherwise False	
+	"""
 	i, j = pos
 	screen = 1
 	if (i >= 100 and i <= 250 and j >= 320 and j <= 370):
@@ -125,45 +168,15 @@ def check_click_second_screen(background, pos, game):
 
 	return screen
 
-def screens(background, screen, pos, game, turn):
-	i, j = pos
-	if screen == 0:
-		first_screen(background)
-		if (i >= 100 and i <= 250 and j >= 320 and j <= 370):
-			#Human - "X", Computer - "O"
-			screen = 1
-			game.set_computer_human("O", "X")
-			second_screen(background)
-		elif (i >= 300 and i <= 450 and j >= 320 and j <= 370):
-			#Human - "O", Computer - "X"
-			screen = 1
-			game.set_computer_human("X", "O")
-			second_screen(background)
 
-	elif screen == 1:
-		second_screen(background)
-		if (i >= 100 and i <= 250 and j >= 320 and j <= 370):
-			#You starts
-			screen = 2
-			game.who_starts(game.human)
-			game_screen(background)
-		elif (i >= 300 and i <= 450 and j >= 320 and j <= 370):
-			#computer starts
-			screen = 2
-			game.who_starts(game.computer)
-			game_screen(background)
-			
-	elif screen == 2:
-		game_screen(background)
-
-		if check_click_grid(background, pos, game):
-			drawn_symbols(background, game)
-			game.computer_turn(game.computer)
-			drawn_symbols(background, game)
-
-	return screen
-
-def drawn_symbols(background, game):	
+def drawn_symbols(background, game):
+	""" 
+	Drawn symbol "X/jon snow" or "O/white walker" on game's grid
+	Args:
+		background (<class 'pygame.Surface'>): surface of pygame
+		game (class 'tictactoe.Tictactoe'): tictactoe game
+	"""
+	
 	game_screen(background)
 
 	def where_is_symbol(symbol):
@@ -198,7 +211,8 @@ def drawn_symbols(background, game):
 					background.blit(img, (185,400))
 				elif j == 2:
 					background.blit(img, (335,400))
-			
+
+	#Load images of game of thrones		
 	jon_snow = pygame.image.load('imgs/jon_snow.png')
 	white_walker = pygame.image.load('imgs/white_walker.png')
 
@@ -207,15 +221,25 @@ def drawn_symbols(background, game):
 	text = font.render("X", 1, blue)
 	pos = where_is_symbol("X")
 	if len(pos) != 0:
-		draw(jon_snow)
+		draw(jon_snow) 
 	text = font.render("O", 1, navy)
 	pos = where_is_symbol("O")
 	if len(pos) != 0:
 		draw(white_walker)
 
-def print_winner(background, symbol, game, tie = False):
+def print_winner(background, symbol, game, draw = False):
+	""" 
+	Print winner of the game (You lose, you win, draw) and
+	restart button
+	Args:
+		background (<class 'pygame.Surface'>): surface of pygame
+		symbol (str): symbol "X" or "O"
+		game (class 'tictactoe.Tictactoe'): tictactoe game
+		draw (bool): draw true if there is no winner
+	"""
+
 	font = pygame.font.Font(None, 40)
-	if tie:
+	if draw:
 		text = font.render("Empate", 1, navy)
 		background.blit(text, (200,570))
 	elif symbol == game.human:
@@ -231,6 +255,14 @@ def print_winner(background, symbol, game, tie = False):
 	background.blit(text, (200, 635))
 
 def check_click_restart(pos, game):
+	""" 
+	Checks if the click was on the restart button
+	Args:
+		pos (tuple): position x and y of screen
+		game (class 'tictactoe.Tictactoe'): tictactoe game
+	Returns:
+		bool: True if it was, otherwise False
+	"""
 	i, j = pos
 
 	if (i >= 180 and i <= 320 and j >= 620 and j <= 670):
@@ -238,6 +270,9 @@ def check_click_restart(pos, game):
 	return False
 
 def interface():
+	""" 
+	Logic of game, call screens 
+	"""
 	game = Tictactoe()
 	pygame.init()
 	background = pygame.display.set_mode((512,700))
@@ -246,8 +281,8 @@ def interface():
 	screen = 0
 	restart = False
 	turn = False
-	screen = screens(background, 0, [-1,-1], game, turn)
 	
+	first_screen(background)
 	while screen == 0 and not game_over:
 		for event in pygame.event.get():
 			if event.type == QUIT:
@@ -288,11 +323,9 @@ def interface():
 						if game.state_winner(game.grid, game.computer):
 							print_winner(background, game.computer, game)
 							restart = True
-							#game_over = True
 						elif len(game.free_positions(game.grid)) == 0:
 							print_winner(background, game.computer, game, True)
 							restart = True
-							#game_over = True
 					if restart and check_click_restart(position, game):
 						restart = False
 						game.grid = [
@@ -311,6 +344,5 @@ def interface():
 			pygame.display.update()
 			turn = True
 
-	
 
-interface()
+interface() #start game
