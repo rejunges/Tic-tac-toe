@@ -6,9 +6,28 @@ gainsboro = (220, 220, 220)
 black = (0, 0, 0)
 white = (255, 255, 255)
 red = (255, 0, 0)
-green = (0, 255, 0)
+green = (0, 51, 0)
 blue = (0, 0, 255)
 navy = (0, 0, 128)
+
+def first_screen(background):
+	background.fill(gainsboro)
+	font = pygame.font.Font(None, 40)
+	text = font.render("Qual símbolo quer utilizar?", 1, black)
+	background.blit(text, (80,250))
+
+	#buttons
+	pygame.draw.rect(background, blue,(100,320,150,50))
+	pygame.draw.rect(background, navy,(300,320,150,50))
+	font = pygame.font.Font(None, 30)
+	#text = font.render("X", 1, white)
+	#background.blit(text, (170, 335))
+	#text = font.render("O", 1, white)
+	#background.blit(text, (370, 335))
+	text = font.render("Jon Snow", 1, white)
+	background.blit(text, (130, 335))
+	text = font.render("White Walker", 1, white)
+	background.blit(text, (310, 335))
 		
 def second_screen(background):
 	background.fill(gainsboro)
@@ -26,21 +45,6 @@ def second_screen(background):
 	background.blit(text, (315, 335))
 
 	
-def first_screen(background):
-	background.fill(gainsboro)
-	font = pygame.font.Font(None, 40)
-	text = font.render("Qual símbolo quer utilizar?", 1, black)
-	background.blit(text, (80,250))
-
-	#buttons
-	pygame.draw.rect(background, blue,(100,320,150,50))
-	pygame.draw.rect(background, navy,(300,320,150,50))
-	font = pygame.font.Font(None, 30)
-	text = font.render("X", 1, white)
-	background.blit(text, (170, 335))
-	text = font.render("O", 1, white)
-	background.blit(text, (370, 335))
-
 def game_screen(background):
 	background.fill(gainsboro)
 	font = pygame.font.Font(None, 50)
@@ -91,6 +95,7 @@ def check_click_grid(background, pos, game):
 
 def check_click_first_screen(background, pos, game):
 	i, j = pos
+	screen = 0
 	if (i >= 100 and i <= 250 and j >= 320 and j <= 370):
 		#Human - "X", Computer - "O"
 		screen = 1
@@ -169,50 +174,68 @@ def drawn_symbols(background, game):
 					position.append([i,j])
 		return position
 	
-	def draw():
+	def draw(img):
 		for p in pos:
 			i,j = p	
 			if i == 0:
 				if j == 0:
-					background.blit(text, (35,100))	
+					background.blit(img, (35,100))	
 				elif j == 1:
-					background.blit(text, (185,100))
+					background.blit(img, (185,100))
 				elif j == 2:
-					background.blit(text, (335,100))
+					background.blit(img, (335,100))
 			elif i == 1:
 				if j == 0:
-					background.blit(text, (35,250))	
+					background.blit(img, (35,250))	
 				elif j == 1:
-					background.blit(text, (185,250))
+					background.blit(img, (185,250))
 				elif j == 2:
-					background.blit(text, (335,250))
+					background.blit(img, (335,250))
 			elif i == 2:
 				if j == 0:
-					background.blit(text, (35,400))	
+					background.blit(img, (35,400))	
 				elif j == 1:
-					background.blit(text, (185,400))
+					background.blit(img, (185,400))
 				elif j == 2:
-					background.blit(text, (335,400))
+					background.blit(img, (335,400))
+			
+	jon_snow = pygame.image.load('imgs/jon_snow.png')
+	white_walker = pygame.image.load('imgs/white_walker.png')
 
+		
 	font = pygame.font.Font(None, 250)
 	text = font.render("X", 1, blue)
 	pos = where_is_symbol("X")
 	if len(pos) != 0:
-		draw()
+		draw(jon_snow)
 	text = font.render("O", 1, navy)
 	pos = where_is_symbol("O")
 	if len(pos) != 0:
-		draw()
+		draw(white_walker)
 
 def print_winner(background, symbol, game, tie = False):
 	font = pygame.font.Font(None, 40)
 	if tie:
-		text = font.render("Empate", 1, green)
+		text = font.render("Empate", 1, navy)
+		background.blit(text, (200,570))
 	elif symbol == game.human:
 		text = font.render("Você venceu", 1, green)
 	else:
 		text = font.render("Você perdeu", 1, red)
-	background.blit(text, (200,600))
+		background.blit(text, (162,570))
+
+	#button to restart
+	pygame.draw.rect(background, green, (180, 620,140,50))
+	font = pygame.font.Font(None, 30)
+	text = font.render("Recomeçar", 1, white)
+	background.blit(text, (200, 635))
+
+def check_click_restart(pos, game):
+	i, j = pos
+
+	if (i >= 180 and i <= 320 and j >= 620 and j <= 670):
+		return True
+	return False
 
 def interface():
 	game = Tictactoe()
@@ -220,7 +243,9 @@ def interface():
 	background = pygame.display.set_mode((512,700))
 	pygame.display.set_caption("Tic-tac-toe")
 	game_over = False
-	turn = 0
+	screen = 0
+	restart = False
+	turn = False
 	screen = screens(background, 0, [-1,-1], game, turn)
 	
 	while screen == 0 and not game_over:
@@ -245,14 +270,14 @@ def interface():
 		pygame.display.update()
 	
 	while screen == 2 and not game_over:
-		if game.starts == game.human:
+		if game.starts == game.human or turn == True:
 			for event in pygame.event.get():
 				if event.type == QUIT:
 					pygame.quit()
 					game_over = True
 				if event.type == pygame.MOUSEBUTTONUP:
 					position = pygame.mouse.get_pos()
-					if check_click_grid(background, position, game):
+					if not restart and check_click_grid(background, position, game):
 						drawn_symbols(background, game)
 						pygame.display.update()
 						if game.state_winner(game.grid, game.human):
@@ -262,22 +287,30 @@ def interface():
 						drawn_symbols(background, game)
 						if game.state_winner(game.grid, game.computer):
 							print_winner(background, game.computer, game)
-							game_over = True
+							restart = True
+							#game_over = True
 						elif len(game.free_positions(game.grid)) == 0:
 							print_winner(background, game.computer, game, True)
-							game_over = True
+							restart = True
+							#game_over = True
+					if restart and check_click_restart(position, game):
+						restart = False
+						game.grid = [
+							[0,0,0],
+							[0,0,0],
+							[0,0,0]
+						]
+						game_screen(background)
+						turn = False
+						game.starts = game.human if game.starts == game.computer else game.computer
+
 			pygame.display.update()
 		else:
 			game.computer_turn(game.computer)
 			drawn_symbols(background, game)
 			pygame.display.update()
-			game.starts = game.human
+			turn = True
 
-	game_over = False
-	while not game_over:
-		for event in pygame.event.get():
-			if event.type == QUIT:
-				pygame.quit()
-				game_over = True
+	
 
 interface()

@@ -175,9 +175,9 @@ class Tictactoe:
 		"""
 
 		if self.state_winner(grid, "X"):
-			return -10 + depth, grid
+			return -10 - depth, grid
 		if self.state_winner(grid, "O"):
-			return 10 - depth, grid
+			return 10 + depth, grid
 		if depth == 0:
 			return 0, grid 
 
