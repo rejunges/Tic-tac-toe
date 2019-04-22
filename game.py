@@ -282,6 +282,7 @@ def interface():
 	restart = False
 	turn = False
 	
+	#First screen logic
 	first_screen(background)
 	while screen == 0 and not game_over:
 		for event in pygame.event.get():
@@ -291,8 +292,10 @@ def interface():
 			if event.type == pygame.MOUSEBUTTONUP:
 				position = pygame.mouse.get_pos()
 				screen = check_click_first_screen(background, position, game)
-		pygame.display.update()
+		if not game_over:
+			pygame.display.update()
 	
+	#Second screen logic
 	while screen == 1 and not game_over:
 		for event in pygame.event.get():
 			if event.type == QUIT:
@@ -302,8 +305,10 @@ def interface():
 				position = pygame.mouse.get_pos()
 				screen = check_click_second_screen(background, position, game)
 				
-		pygame.display.update()
+		if not game_over:
+			pygame.display.update()
 	
+	#Game screen logic
 	while screen == 2 and not game_over:
 		if game.starts == game.human or turn == True:
 			for event in pygame.event.get():
@@ -337,12 +342,14 @@ def interface():
 						turn = False
 						game.starts = game.human if game.starts == game.computer else game.computer
 
-			pygame.display.update()
+			if not game_over:
+				pygame.display.update()
 		else:
 			game.computer_turn(game.computer)
 			drawn_symbols(background, game)
 			pygame.display.update()
 			turn = True
+	
 
 
 interface() #start game
